@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Shruti & Saurabh | Royal Wedding Invitation | The Nagar Family</title>
+  
+  <!-- Prevent browser from restoring previous scroll position on reload -->
+  <script>
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+  </script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts for Indian Royal Wedding Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,700;1,400;1,600&family=Marcellus&family=Rozha+One&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons & Confetti Library -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            maroon: {
+              950: '#1a0306',
+              900: '#2b050b',
+              850: '#3d0811',
+              800: '#530b17',
+              700: '#6d1020',
+            },
+            gold: {
+              100: '#fff9e5',
+              200: '#faeec0',
+              300: '#f6df8d',
+              400: '#eec956',
+              500: '#d4af37',
+              600: '#b8860b',
+              700: '#8c6207',
+            },
+            champagne: '#faf5ea',
+            cream: '#fdfbf7',
+          },
+          fontFamily: {
+            cinzel: ['"Cinzel"', 'serif'],
+            decorative: ['"Cinzel Decorative"', 'serif'],
+            marcellus: ['"Marcellus"', 'serif'],
+            cormorant: ['"Cormorant Garamond"', 'serif'],
+            devanagari: ['"Rozha One"', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #1a0306;
+      background-image: 
+        radial-gradient(circle at 50% 0%, #460912 0%, #1a0306 75%),
+        radial-gradient(circle at 20px 20px, rgba(212, 175, 55, 0.08) 2px, transparent 0);
+      background-size: 100% 100%, 48px 48px;
+      color: #faf5ea;
+      font-family: 'Marcellus', serif;
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .gold-foil-text {
+      background: linear-gradient(135deg, #fff3c4 0%, #f1cb5b 35%, #d4af37 60%, #996515 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .ornate-card {
+      background: linear-gradient(145deg, rgba(43, 5, 11, 0.94), rgba(26, 3, 6, 0.97));
+      border: 1px solid rgba(212, 175, 55, 0.45);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), inset 0 0 25px rgba(212, 175, 55, 0.08);
+      position: relative;
+    }
+
+    .corner-ornament {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border-color: #d4af37;
+      pointer-events: none;
+    }
+    .c-tl { top: 8px; left: 8px; border-top: 2px solid; border-left: 2px solid; }
+    .c-tr { top: 8px; right: 8px; border-top: 2px solid; border-right: 2px solid; }
+    .c-bl { bottom: 8px; left: 8px; border-bottom: 2px solid; border-left: 2px solid; }
+    .c-br { bottom: 8px; right: 8px; border-bottom: 2px solid; border-right: 2px solid; }
+
+    #scratchCanvas {
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    @keyframes rotateVinyl {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .animate-spin-slow {
+      animation: rotateVinyl 4s linear infinite;
+    }
+
+    @keyframes softPulse {
+      0%, 100% { box-shadow: 0 0 15px rgba(212, 175, 55, 0.3); }
+      50% { box-shadow: 0 0 30px rgba(212, 175, 55, 0.7); }
+    }
+    .gold-glow {
+      animation: softPulse 3.5s infinite ease-in-out;
+    }
+
+    .petal {
+      position: fixed;
+      pointer-events: none;
+      z-index: 25;
+      top: -5%;
+      user-select: none;
+      animation: petalFall linear infinite;
+    }
+    @keyframes petalFall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0.85; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+  </style>
+</head>
+<body class="min-h-screen relative selection:bg-gold-500 selection:text-maroon-950">
+
+  <div id="petalLayer" class="fixed inset-0 pointer-events-none z-20 overflow-hidden"></div>
+
+  <!-- HTML5 Audio with Wedding Song -->
+  <audio id="weddingShehnaiAudio" loop preload="auto">
+    <source src="wedding-song.mp3" type="audio/mp3">
+  </audio>
+
+  <!-- Floating Audio Widget (Spinning Vinyl Disc) -->
+  <div id="musicController" class="fixed bottom-6 right-5 z-40 flex items-center gap-3 bg-maroon-900/90 backdrop-blur-md border border-gold-500/70 rounded-full py-2 px-4 shadow-2xl cursor-pointer hover:bg-maroon-850 hover:border-gold-300 transition duration-300">
+    <div id="discGraphic" class="w-9 h-9 rounded-full bg-gradient-to-tr from-maroon-950 via-gold-500 to-maroon-900 flex items-center justify-center text-xs text-maroon-950 shadow-md">
+      <i class="fas fa-compact-disc text-base text-gold-200"></i>
+    </div>
+    <div class="text-left hidden sm:block">
+      <p id="musicStatusText" class="text-[11px] font-cinzel font-bold text-gold-300 tracking-wider uppercase leading-none">Wedding Melodies</p>
+    </div>
+    <i id="soundIcon" class="fas fa-volume-up text-gold-400 text-sm ml-1"></i>
+  </div>
+
+  <!-- Entrance Gateway (Enables audio autoplay on user touch) -->
+  <div id="entranceModal" class="fixed inset-0 z-50 flex items-center justify-center bg-maroon-950/98 px-4 transition-all duration-1000">
+    <div class="absolute w-[300px] h-[300px] sm:w-[460px] sm:h-[460px] border border-gold-500/20 rounded-full animate-spin" style="animation-duration: 50s;"></div>
+    <div class="absolute w-[260px] h-[260px] sm:w-[400px] sm:h-[400px] border border-dashed border-gold-500/30 rounded-full"></div>
+
+    <div class="relative z-10 text-center max-w-lg w-full p-8 sm:p-10 ornate-card rounded-3xl border-2 border-gold-500/80 shadow-2xl">
+      <div class="corner-ornament c-tl"></div>
+      <div class="corner-ornament c-tr"></div>
+      <div class="corner-ornament c-bl"></div>
+      <div class="corner-ornament c-br"></div>
+
+      <!-- Sacred Ganesh Invocation -->
+      <div class="text-gold-400 text-3xl mb-2 tracking-widest">卐 &nbsp; ॐ &nbsp; 卐</div>
+      <p class="font-devanagari text-2xl text-gold-400 mb-1">|| श्री गणेशाय नमः ||</p>
+      <p class="text-xs font-cormorant italic text-gold-200/90 mb-4 leading-relaxed max-w-sm mx-auto">
+        वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ ।<br>
+        निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥
+      </p>
+
+      <div class="w-20 h-20 mx-auto my-4 rounded-full border-2 border-gold-400 bg-maroon-900 flex flex-col items-center justify-center shadow-lg gold-glow">
+        <span class="font-decorative text-2xl font-bold text-gold-300">S &bull; S</span>
+      </div>
+
+      <p class="text-[11px] font-cinzel tracking-widest text-gold-400 uppercase">The Nagar Family Cordially Invites You</p>
+      <h1 class="font-decorative text-2xl sm:text-3xl gold-foil-text my-2 leading-tight">
+        Shruti &amp; Saurabh
+      </h1>
+      <p class="text-xs text-champagne/80 font-marcellus mb-6">
+        To witness and celebrate their sacred wedding rituals in Ahmedabad
+      </p>
+
+      <button id="enterCelebrationBtn" class="px-8 py-3.5 bg-gradient-to-r from-gold-600 via-gold-400 to-gold-600 text-maroon-950 font-cinzel font-bold text-xs sm:text-sm tracking-widest uppercase rounded-full shadow-lg hover:shadow-gold-500/50 hover:scale-105 active:scale-95 transition-all duration-300 inline-flex items-center gap-3">
+        <span>Tap To Enter &amp; Play Music</span>
+        <i class="fas fa-play text-xs text-maroon-950"></i>
+      </button>
+
+      <p class="text-[10px] text-champagne/60 mt-4 italic font-marcellus">
+        ♪ Audio will begin softly on entry
+      </p>
+    </div>
+  </div>
+
+  <!-- Main Invitation Content -->
+  <main id="mainPage" class="opacity-0 transition-opacity duration-1000 max-w-4xl mx-auto px-4 py-8 pb-28">
+
+    <!-- Hero Header -->
+    <header class="text-center py-10 relative">
+      <div class="inline-block p-1.5 rounded-full border border-gold-500/40 mb-3">
+        <div class="w-20 h-20 rounded-full bg-maroon-900 border-2 border-gold-400 flex flex-col items-center justify-center shadow-lg">
+          <span class="font-decorative text-2xl font-bold text-gold-300">S &amp; S</span>
+          <span class="text-[8px] font-cinzel text-gold-400 tracking-widest">NAGAR</span>
+        </div>
+      </div>
+
+      <p class="text-xs uppercase tracking-[0.35em] text-gold-400 font-cinzel mb-2">
+        Wedding Invitation &bull; Bride's Family
+      </p>
+      <h1 class="font-decorative text-4xl sm:text-6xl md:text-7xl gold-foil-text my-2 leading-tight">
+        Shruti &amp; Saurabh
+      </h1>
+
+      <div class="flex items-center justify-center gap-4 my-3 text-gold-400/80">
+        <span class="h-px w-16 sm:w-28 bg-gradient-to-r from-transparent to-gold-400"></span>
+        <span class="font-devanagari text-gold-300 text-base">शुभ विवाह</span>
+        <span class="h-px w-16 sm:w-28 bg-gradient-to-l from-transparent to-gold-400"></span>
+      </div>
+
+      <p class="font-cinzel text-xs sm:text-sm tracking-widest text-champagne uppercase max-w-lg mx-auto">
+        14th &bull; 16th February 2027 &bull; Ahmedabad, Gujarat
+      </p>
+    </header>
+
+    <!-- Couple Presentation Section -->
+    <section class="my-10 text-center ornate-card p-6 sm:p-10 rounded-3xl">
+      <div class="corner-ornament c-tl"></div>
+      <div class="corner-ornament c-tr"></div>
+      <div class="corner-ornament c-bl"></div>
+      <div class="corner-ornament c-br"></div>
+
+      <p class="text-xs font-cinzel text-gold-400 uppercase tracking-widest mb-2">With The Grace Of God &amp; Ancestors</p>
+      <h2 class="font-cinzel text-xl sm:text-2xl font-bold text-champagne mb-4">
+        The Nagar Family
+      </h2>
+      <p class="text-xs sm:text-sm text-champagne/85 font-marcellus leading-relaxed max-w-2xl mx-auto mb-8">
+        Warmly invites you to grace the joyous wedding celebrations and bestow your heartfelt blessings upon our beloved daughter as she embarks on the sacred path of holy matrimony with
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+        <!-- Bride Card -->
+        <div class="p-6 bg-maroon-900/70 rounded-2xl border-2 border-gold-500/60 relative flex flex-col justify-between">
+          <span class="absolute top-0 right-0 bg-gold-500/20 text-gold-300 px-3 py-1 text-[10px] font-cinzel uppercase tracking-wider rounded-bl-xl border-l border-b border-gold-500/30">
+            Bride
+          </span>
+          <div>
+            <p class="font-cinzel text-xs text-gold-400 uppercase tracking-widest mt-2">Our Beloved Daughter</p>
+            <h3 class="font-decorative text-2xl sm:text-3xl font-bold text-gold-300 mt-1">Shruti Nagar</h3>
+            <div class="h-0.5 w-16 bg-gold-500/50 mx-auto my-3"></div>
+            <p class="text-sm text-champagne/95 font-marcellus leading-relaxed">
+              Daughter of<br>
+              <strong class="text-gold-200 font-cinzel text-base">Smt. Tara Nagar &amp; Shri Uttam Nagar</strong>
+            </p>
+          </div>
+        </div>
+
+        <!-- Groom Card -->
+        <div class="p-6 bg-maroon-900/70 rounded-2xl border-2 border-gold-500/60 relative flex flex-col justify-between">
+          <span class="absolute top-0 right-0 bg-gold-500/20 text-gold-300 px-3 py-1 text-[10px] font-cinzel uppercase tracking-wider rounded-bl-xl border-l border-b border-gold-500/30">
+            Groom
+          </span>
+          <div>
+            <p class="font-cinzel text-xs text-gold-400 uppercase tracking-widest mt-2">Welcoming With Open Arms</p>
+            <h3 class="font-decorative text-2xl sm:text-3xl font-bold text-gold-300 mt-1">Saurabh Nagar</h3>
+            <div class="h-0.5 w-16 bg-gold-500/50 mx-auto my-3"></div>
+            <p class="text-sm text-champagne/95 font-marcellus leading-relaxed">
+              Son of<br>
+              <strong class="text-gold-200 font-cinzel text-base">Smt. Padma Nagar &amp; Shri Deepak Nagar</strong>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Scratch-To-Reveal Card -->
+    <section class="my-14 text-center">
+      <div class="max-w-md mx-auto ornate-card p-6 sm:p-8 rounded-3xl border border-gold-500/60 relative">
+        <div class="corner-ornament c-tl"></div>
+        <div class="corner-ornament c-tr"></div>
+        <div class="corner-ornament c-bl"></div>
+        <div class="corner-ornament c-br"></div>
+
+        <h3 class="font-cinzel text-xl sm:text-2xl font-bold text-gold-300 tracking-wider mb-1">
+          <i class="fas fa-sparkles text-gold-400 mr-2"></i> Reveal Wedding Date
+        </h3>
+        <p class="text-xs text-champagne/75 font-marcellus mb-5">
+          Scratch off the golden seal below with your finger or cursor!
+        </p>
+
+        <!-- Scratch Container -->
+        <div class="relative w-[280px] h-[175px] sm:w-[320px] sm:h-[185px] mx-auto rounded-2xl overflow-hidden shadow-2xl border-2 border-gold-500 select-none">
+          <!-- Hidden underneath -->
+          <div class="absolute inset-0 bg-gradient-to-br from-maroon-950 via-maroon-900 to-black flex flex-col items-center justify-center p-4 text-center">
+            <span class="text-gold-400 text-xs font-cinzel tracking-widest uppercase mb-1">The Auspicious Wedding Day</span>
+            <span class="font-decorative text-3xl font-bold text-gold-200">16 &bull; 02 &bull; 2027</span>
+            <span class="text-xs text-champagne font-marcellus mt-1">Tuesday Evening</span>
+            <div class="mt-2.5 px-3 py-1 bg-gold-500/20 rounded-full border border-gold-400/40 text-[10px] text-gold-300 font-cinzel">
+              <i class="fas fa-map-marker-alt mr-1 text-gold-400"></i> Spring Valley, Nikol, Ahmedabad
+            </div>
+          </div>
+
+          <!-- Scratch Canvas Overlay -->
+          <canvas id="scratchCanvas" width="320" height="185" class="absolute inset-0 w-full h-full z-10"></canvas>
+        </div>
+
+        <div id="scratchStatusMsg" class="mt-4 text-xs font-cinzel text-gold-400 flex items-center justify-center gap-2">
+          <i class="fas fa-hand-sparkles animate-pulse"></i>
+          <span>Scratch 35% of the card to fully reveal!</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Live Countdown Timer -->
+    <section class="my-14 text-center">
+      <div class="ornate-card p-6 sm:p-8 rounded-3xl border border-gold-500/50">
+        <p class="text-xs uppercase font-cinzel tracking-[0.25em] text-gold-400 mb-1">Counting Down The Moments</p>
+        <h3 class="font-decorative text-2xl sm:text-3xl text-gold-200 mb-6">Until The Grand Wedding</h3>
+
+        <div class="grid grid-cols-4 gap-2 sm:gap-4 max-w-lg mx-auto">
+          <div class="bg-maroon-950/80 p-3 sm:p-4 rounded-2xl border border-gold-500/40">
+            <span id="daysVal" class="block font-cinzel text-2xl sm:text-4xl font-bold text-gold-300">00</span>
+            <span class="text-[10px] sm:text-xs font-marcellus tracking-wider text-champagne/70 uppercase">Days</span>
+          </div>
+          <div class="bg-maroon-950/80 p-3 sm:p-4 rounded-2xl border border-gold-500/40">
+            <span id="hoursVal" class="block font-cinzel text-2xl sm:text-4xl font-bold text-gold-300">00</span>
+            <span class="text-[10px] sm:text-xs font-marcellus tracking-wider text-champagne/70 uppercase">Hours</span>
+          </div>
+          <div class="bg-maroon-950/80 p-3 sm:p-4 rounded-2xl border border-gold-500/40">
+            <span id="minsVal" class="block font-cinzel text-2xl sm:text-4xl font-bold text-gold-300">00</span>
+            <span class="text-[10px] sm:text-xs font-marcellus tracking-wider text-champagne/70 uppercase">Mins</span>
+          </div>
+          <div class="bg-maroon-950/80 p-3 sm:p-4 rounded-2xl border border-gold-500/40">
+            <span id="secsVal" class="block font-cinzel text-2xl sm:text-4xl font-bold text-gold-300">00</span>
+            <span class="text-[10px] sm:text-xs font-marcellus tracking-wider text-champagne/70 uppercase">Secs</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 Wedding Ceremonies Schedule -->
+    <section class="my-16">
+      <div class="text-center mb-10">
+        <p class="text-xs uppercase font-cinzel tracking-widest text-gold-400">Celebration Timeline</p>
+        <h3 class="font-decorative text-3xl sm:text-4xl text-gold-200">Ceremonies &amp; Venues</h3>
+        <p class="text-xs text-champagne/70 font-marcellus max-w-md mx-auto mt-2">
+          Your graceful presence at each sacred ritual will shower eternal joy upon the bride and groom.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- 1. Ganesh Sthapana -->
+        <div class="ornate-card p-6 rounded-2xl border border-gold-500/40 hover:border-gold-300 transition-all">
+          <div class="flex items-start justify-between">
+            <div>
+              <span class="inline-block px-3 py-1 bg-gold-500/20 text-gold-400 rounded-full text-[10px] font-cinzel font-semibold tracking-wider">
+                14 FEB 2027 &bull; MORNING
+              </span>
+              <h4 class="font-cinzel text-xl font-bold text-gold-300 mt-2">1. Ganesh Sthapana</h4>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-maroon-900 border border-gold-500/50 flex items-center justify-center text-gold-400">
+              <i class="fas fa-om text-base"></i>
+            </div>
+          </div>
+          <div class="my-3 text-xs space-y-1.5 text-champagne/85 font-marcellus">
+            <p><i class="far fa-clock text-gold-400 w-5"></i> <strong>Time:</strong> 7:00 AM – 9:00 AM</p>
+            <p><i class="fas fa-house-chimney text-gold-400 w-5"></i> <strong>Venue:</strong> At Residence: R-201, Vrundavan Vatika, Near Mahadev Temple, Vastral, Ahmedabad - 382418</p>
+          </div>
+          <a href="https://www.google.com/maps/search/?api=1&query=Vrundavan+Vatika+Vastral+Ahmedabad" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-xs font-cinzel text-gold-300 hover:text-gold-100 underline underline-offset-4 mt-2">
+            <i class="fas fa-location-arrow"></i> Open Residence on Google Maps
+          </a>
+        </div>
+
+        <!-- 2. Haldi Rasam -->
+        <div class="ornate-card p-6 rounded-2xl border border-gold-500/40 hover:border-gold-300 transition-all">
+          <div class="flex items-start justify-between">
+            <div>
+              <span class="inline-block px-3 py-1 bg-gold-500/20 text-gold-400 rounded-full text-[10px] font-cinzel font-semibold tracking-wider">
+                14 FEB 2027 &bull; MORNING
+              </span>
+              <h4 class="font-cinzel text-xl font-bold text-gold-300 mt-2">2. Haldi Rasam</h4>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-maroon-900 border border-gold-500/50 flex items-center justify-center text-gold-400">
+              <i class="fas fa-sun text-base"></i>
+            </div>
+          </div>
+          <div class="my-3 text-xs space-y-1.5 text-champagne/85 font-marcellus">
+            <p><i class="far fa-clock text-gold-400 w-5"></i> <strong>Time:</strong> 9:30 AM – 11:30 AM</p>
+            <p><i class="fas fa-tshirt text-gold-400 w-5"></i> <strong>Dress Code:</strong> Traditional Yellows &amp; Floral Attire</p>
+            <p><i class="fas fa-map-pin text-gold-400 w-5"></i> <strong>Venue:</strong> Vastral Party Plot, Ratanpura Road, Near Metro Station, Vastral, Ahmedabad</p>
+          </div>
+          <a href="https://www.google.com/maps/search/?api=1&query=Vastral+Party+Plot+Ahmedabad" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-xs font-cinzel text-gold-300 hover:text-gold-100 underline underline-offset-4 mt-2">
+            <i class="fas fa-location-arrow"></i> Open Vastral Party Plot on Maps
+          </a>
+        </div>
+
+        <!-- 3. Netar Ceremony -->
+        <div class="ornate-card p-6 rounded-2xl border border-gold-500/40 hover:border-gold-300 transition-all">
+          <div class="flex items-start justify-between">
+            <div>
+              <span class="inline-block px-3 py-1 bg-gold-500/20 text-gold-400 rounded-full text-[10px] font-cinzel font-semibold tracking-wider">
+                14 FEB 2027 &bull; AFTERNOON
+              </span>
+              <h4 class="font-cinzel text-xl font-bold text-gold-300 mt-2">3. Netar Ceremony</h4>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-maroon-900 border border-gold-500/50 flex items-center justify-center text-gold-400">
+              <i class="fas fa-hands-praying text-base"></i>
+            </div>
+          </div>
+          <div class="my-3 text-xs space-y-1.5 text-champagne/85 font-marcellus">
+            <p><i class="far fa-clock text-gold-400 w-5"></i> <strong>Time:</strong> 2:00 PM – 5:00 PM</p>
+            <p><i class="fas fa-hand-holding-heart text-gold-400 w-5"></i> Traditional presentation of Shagun &amp; heartfelt blessings by relatives and guests</p>
+            <p><i class="fas fa-map-pin text-gold-400 w-5"></i> <strong>Venue:</strong> Vastral Party Plot, Ratanpura Road, Vastral, Ahmedabad</p>
+          </div>
+          <a href="https://www.google.com/maps/search/?api=1&query=Vastral+Party+Plot+Ahmedabad" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-xs font-cinzel text-gold-300 hover:text-gold-100 underline underline-offset-4 mt-2">
+            <i class="fas fa-location-arrow"></i> Open Vastral Party Plot on Maps
+          </a>
+        </div>
+
+        <!-- 4. Dinner -->
+        <div class="ornate-card p-6 rounded-2xl border border-gold-500/40 hover:border-gold-300 transition-all">
+          <div class="flex items-start justify-between">
+            <div>
+              <span class="inline-block px-3 py-1 bg-gold-500/20 text-gold-400 rounded-full text-[10px] font-cinzel font-semibold tracking-wider">
+                14 FEB 2027 &bull; EVENING
+              </span>
+              <h4 class="font-cinzel text-xl font-bold text-gold-300 mt-2">4. Dinner</h4>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-maroon-900 border border-gold-500/50 flex items-center justify-center text-gold-400">
+              <i class="fas fa-utensils text-base"></i>
+            </div>
+          </div>
+          <div class="my-3 text-xs space-y-1.5 text-champagne/85 font-marcellus">
+            <p><i class="far fa-clock text-gold-400 w-5"></i> <strong>Time:</strong> 7:00 PM – 9:00 PM</p>
+            <p><i class="fas fa-music text-gold-400 w-5"></i> Celebratory family dinner, music &amp; festivities</p>
+            <p><i class="fas fa-map-pin text-gold-400 w-5"></i> <strong>Venue:</strong> Vastral Party Plot, Ratanpura Road, Vastral, Ahmedabad</p>
+          </div>
+          <a href="https://www.google.com/maps/search/?api=1&query=Vastral+Party+Plot+Ahmedabad" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-xs font-cinzel text-gold-300 hover:text-gold-100 underline underline-offset-4 mt-2">
+            <i class="fas fa-location-arrow"></i> Open Vastral Party Plot on Maps
+          </a>
+        </div>
+
+        <!-- 5. Bandoli Procession -->
+        <div class="ornate-card p-6 rounded-2xl border border-gold-500/40 hover:border-gold-300 transition-all">
+          <div class="flex items-start justify-between">
+            <div>
+              <span class="inline-block px-3 py-1 bg-gold-500/20 text-gold-400 rounded-full text-[10px] font-cinzel font-semibold tracking-wider">
+                14 FEB 2027 &bull; NIGHT
+              </span>
+              <h4 class="font-cinzel text-xl font-bold text-gold-300 mt-2">5. Bandoli Procession</h4>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-maroon-900 border border-gold-500/50 flex items-center justify-center text-gold-400">
+              <i class="fas fa-drum text-base"></i>
+            </div>
+          </div>
+          <div class="my-3 text-xs space-y-1.5 text-champagne/85 font-marcellus">
+            <p><i class="far fa-clock text-gold-400 w-5"></i> <strong>Time:</strong> 9:30 PM – Midnight</p>
+            <p><i class="fas fa-route text-gold-400 w-5"></i> Grand street procession with festive dhol &amp; music</p>
+            <p><i class="fas fa-house-chimney text-gold-400 w-5"></i> <strong>Starting Point:</strong> R-201, Vrundavan Vatika, Vastral</p>
+          </div>
+          <a href="https://www.google.com/maps/search/?api=1&query=Vrundavan+Vatika+Vastral+Ahmedabad" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-xs font-cinzel text-gold-300 hover:text-gold-100 underline underline-offset-4 mt-2">
+            <i class="fas fa-location-arrow"></i> Open Residence on Google Maps
+          </a>
+        </div>
+
+        <!-- 6. Grand Wedding Day -->
+        <div class="ornate-card p-6 rounded-2xl border-2 border-gold-400 bg-gradient-to-br from-maroon-900 to-maroon-950 hover:border-gold-300 transition-all gold-glow">
+          <div class="flex items-start justify-between">
+            <div>
+              <span class="inline-block px-3 py-1 bg-gold-500 text-maroon-950 font-cinzel font-bold rounded-full text-[10px] tracking-wider">
+                16 FEB 2027 &bull; THE GRAND WEDDING
+              </span>
+              <h4 class="font-cinzel text-xl font-bold text-gold-300 mt-2">6. The Grand Wedding &amp; Hastamelap</h4>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-gold-500/20 border border-gold-400 flex items-center justify-center text-gold-300">
+              <i class="fas fa-fire-flame-curved text-base"></i>
+            </div>
+          </div>
+          <div class="my-3 text-xs space-y-1.5 text-champagne/95 font-marcellus">
+            <p><i class="far fa-clock text-gold-400 w-5"></i> <strong>Time:</strong> Evening Wedding (5:30 PM Onwards)</p>
+            <p><i class="fas fa-ring text-gold-400 w-5"></i> Varmala, Hastamelap, Kanyadaan &amp; Mangal Pheras</p>
+            <p><i class="fas fa-landmark text-gold-400 w-5"></i> <strong>Grand Venue:</strong> Spring Valley Party Plot, SP Ring Road, Nikol, Ahmedabad - 382350</p>
+          </div>
+          <a href="https://www.google.com/maps/search/?api=1&query=Spring+Valley+Party+Plot+Nikol+Ahmedabad" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-xs font-cinzel font-bold text-gold-300 hover:text-gold-100 underline underline-offset-4 mt-2">
+            <i class="fas fa-location-arrow text-gold-400"></i> Open Spring Valley Nikol in Google Maps
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- The Nagar Family Introductions & Age-Ordered Cousins -->
+    <section class="my-16 ornate-card p-6 sm:p-10 rounded-3xl border border-gold-500/60">
+      <div class="corner-ornament c-tl"></div>
+      <div class="corner-ornament c-tr"></div>
+      <div class="corner-ornament c-bl"></div>
+      <div class="corner-ornament c-br"></div>
+
+      <div class="text-center mb-8">
+        <p class="text-xs uppercase font-cinzel tracking-widest text-gold-400">Heartfelt Compliments &amp; Snehabhilashi</p>
+        <h3 class="font-decorative text-3xl sm:text-4xl text-gold-200">The Nagar Family</h3>
+        <p class="text-xs text-champagne/75 font-marcellus max-w-lg mx-auto mt-2 italic">
+          "United in tradition, bound by endless warmth, and blessing our dearest Shruti on her milestone celebration."
+        </p>
+      </div>
+
+      <!-- Grandfather: The Root & Guiding Light -->
+      <div class="text-center max-w-xl mx-auto p-6 rounded-2xl bg-maroon-950/80 border border-gold-500/40 mb-8">
+        <span class="inline-block px-3 py-1 rounded-full bg-gold-500/15 border border-gold-500/30 text-gold-300 text-[10px] font-cinzel uppercase tracking-widest mb-2">
+          The Root &amp; Guiding Light
+        </span>
+        <h4 class="font-cinzel text-xl sm:text-2xl font-bold text-gold-200">Shri Parshuram Maganlal Nagar</h4>
+        <div class="h-px w-20 bg-gold-500/30 mx-auto my-2.5"></div>
+        <p class="text-xs text-champagne/85 font-cormorant italic">
+          With eternal and sacred blessings in loving memory of <br>
+          <strong class="text-gold-300 font-cinzel">Late Smt. Saraswati Parshuram Nagar</strong>
+        </p>
+      </div>
+
+      <!-- Elders & Pillars -->
+      <div class="mb-10">
+        <p class="text-center text-xs font-cinzel uppercase tracking-widest text-gold-400 mb-4 font-bold">
+          Pillars of Guidance, Strength &amp; Warmth
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+          <div class="p-5 bg-maroon-900/60 rounded-xl border border-gold-500/30 flex flex-col justify-between">
+            <h5 class="font-cinzel text-base font-bold text-gold-200">Vikram &amp; Veena Nagar</h5>
+            <p class="text-xs text-gold-400/90 font-cinzel mt-1 uppercase">Pillars of Strength &amp; Wisdom</p>
+            <p class="text-xs text-champagne/75 font-cormorant italic mt-3">Leading the parivar with quiet reassurance, dignity, and grace.</p>
+          </div>
+          <div class="p-5 bg-maroon-900/90 rounded-xl border-2 border-gold-400 shadow-lg flex flex-col justify-between">
+            <h5 class="font-cinzel text-base font-bold text-gold-300">Uttam &amp; Tara Nagar</h5>
+            <p class="text-xs text-gold-400 font-cinzel mt-1 uppercase font-semibold">Proud Parents of the Bride</p>
+            <p class="text-xs text-champagne/85 font-cormorant italic mt-3">Welcoming you with folded hands, warm gratitude, and overflowing love.</p>
+          </div>
+          <div class="p-5 bg-maroon-900/60 rounded-xl border border-gold-500/30 flex flex-col justify-between">
+            <h5 class="font-cinzel text-base font-bold text-gold-200">Prakash &amp; Anita Nagar</h5>
+            <p class="text-xs text-gold-400/90 font-cinzel mt-1 uppercase">Warmth &amp; Joy of the Clan</p>
+            <p class="text-xs text-champagne/75 font-cormorant italic mt-3">Enlivening our home with radiant energy, laughter, and affection.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cousins Chronology (Strictly Sorted Descending by Age) -->
+      <div class="p-6 bg-maroon-950/90 rounded-2xl border border-gold-500/40">
+        <div class="text-center mb-5">
+          <span class="text-xs font-cinzel uppercase tracking-widest text-gold-400 font-bold block">
+            Our Next Generation &bull; The Bride's Cherished Tribe
+          </span>
+        </div>
+
+        <div class="space-y-3 max-w-2xl mx-auto text-left">
+          <!-- 1. Dr. Divya Nagar & Chirag Nagar (with Master Mahir) -->
+          <div class="p-3.5 bg-maroon-900/50 rounded-xl border-l-4 border-gold-400 border-r border-t border-b border-gold-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <p class="font-cinzel text-sm font-bold text-gold-300">
+                1. Dr. Divya Nagar &amp; Chirag Nagar
+              </p>
+              <p class="text-xs text-champagne/80 font-cormorant italic">
+                Eldest cousin &bull; The compassionate healer, spreading warmth &amp; elegance
+              </p>
+            </div>
+            <span class="inline-block px-3 py-1 bg-gold-500/20 text-gold-300 rounded-full text-[10px] font-cinzel whitespace-nowrap self-start sm:self-center border border-gold-500/30">
+              With Master Mahir (2.5 yrs) 👶
+            </span>
+          </div>
+
+          <!-- 2. Himanshu Nagar -->
+          <div class="p-3.5 bg-maroon-900/50 rounded-xl border-l-4 border-gold-400 border-r border-t border-b border-gold-500/30">
+            <p class="font-cinzel text-sm font-bold text-gold-300">2. Himanshu Nagar</p>
+            <p class="text-xs text-champagne/80 font-cormorant italic">
+              Elder brother &bull; The dependable pillar of strength and companion of cherished memories
+            </p>
+          </div>
+
+          <!-- 3. Dr. Chirag Nagar -->
+          <div class="p-3.5 bg-maroon-900/70 rounded-xl border-l-4 border-gold-400 border-r border-t border-b border-gold-500/40">
+            <p class="font-cinzel text-sm font-bold text-gold-200">3. Dr. Chirag Nagar</p>
+            <p class="text-xs text-champagne/85 font-cormorant italic">
+              Bride’s caring elder brother &bull; Devoted healer, protector &amp; constant mentor
+            </p>
+          </div>
+
+          <!-- 4. Shruti Nagar (Our Bride) -->
+          <div class="p-3.5 bg-maroon-800/80 rounded-xl border-l-4 border-gold-300 border-r border-t border-b border-gold-400/80 gold-glow">
+            <div class="flex items-center justify-between">
+              <p class="font-cinzel text-sm font-bold text-gold-200">4. Shruti Nagar</p>
+              <span class="text-[10px] font-cinzel bg-gold-500 text-maroon-950 font-bold px-2 py-0.5 rounded-full">OUR BRIDE</span>
+            </div>
+            <p class="text-xs text-champagne font-cormorant italic">
+              The heart, joy &amp; darling princess of the entire Nagar Parivar ✨
+            </p>
+          </div>
+
+          <!-- 5. Kushal Nagar -->
+          <div class="p-3.5 bg-maroon-900/50 rounded-xl border-l-4 border-gold-400 border-r border-t border-b border-gold-500/30">
+            <p class="font-cinzel text-sm font-bold text-gold-300">5. Kushal Nagar</p>
+            <p class="text-xs text-champagne/80 font-cormorant italic">
+              The youngest cousin &bull; The vibrant spark, spreading laughter and celebrations
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Boarding Pass RSVP -->
+    <section class="my-16">
+      <div class="text-center mb-6">
+        <p class="text-xs uppercase font-cinzel tracking-widest text-gold-400">Join In Our Celebrations</p>
+        <h3 class="font-decorative text-3xl sm:text-4xl text-gold-200">The Nagar Wedding Express</h3>
+        <p class="text-xs text-champagne/70 font-marcellus max-w-md mx-auto mt-1">
+          Issue your ceremonial boarding pass to confirm your presence.
+        </p>
+      </div>
+
+      <div class="max-w-2xl mx-auto bg-maroon-900 border-2 border-gold-500 rounded-3xl overflow-hidden shadow-2xl relative">
+        <div class="bg-gradient-to-r from-gold-600 via-gold-400 to-gold-600 px-6 py-3.5 flex items-center justify-between text-maroon-950 font-cinzel">
+          <div class="flex items-center gap-2">
+            <i class="fas fa-train-subway text-base"></i>
+            <span class="font-bold tracking-wider text-xs sm:text-sm">ROYAL BOARDING PASS</span>
+          </div>
+          <span class="text-[11px] font-bold tracking-widest">AHMEDABAD &bull; 2027</span>
+        </div>
+
+        <form id="rsvpForm" class="p-6 sm:p-8 space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-cinzel text-gold-300 mb-1">Your Good Name *</label>
+              <input type="text" id="guestNameInput" required placeholder="e.g. Ramesh Bhai &amp; Family" class="w-full bg-maroon-950/90 border border-gold-500/40 rounded-xl px-4 py-2.5 text-xs text-champagne focus:outline-none focus:border-gold-400">
+            </div>
+            <div>
+              <label class="block text-xs font-cinzel text-gold-300 mb-1">Phone / WhatsApp Number *</label>
+              <input type="tel" id="guestPhoneInput" required placeholder="e.g. +91 98250 XXXXX" class="w-full bg-maroon-950/90 border border-gold-500/40 rounded-xl px-4 py-2.5 text-xs text-champagne focus:outline-none focus:border-gold-400">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-cinzel text-gold-300 mb-1">Will You Attend? *</label>
+              <select id="guestAttendanceInput" class="w-full bg-maroon-950 border border-gold-500/40 rounded-xl px-4 py-2.5 text-xs text-champagne focus:outline-none focus:border-gold-400">
+                <option value="Joyfully Attending All Events">Joyfully Attending All Ceremonies</option>
+                <option value="Attending Wedding Ceremony (16 Feb)">Attending Wedding Ceremony (16 Feb)</option>
+                <option value="Blessing Remotely From Afar">Blessing Remotely From Afar</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-cinzel text-gold-300 mb-1">Number of Guests</label>
+              <select id="guestCountInput" class="w-full bg-maroon-950 border border-gold-500/40 rounded-xl px-4 py-2.5 text-xs text-champagne focus:outline-none focus:border-gold-400">
+                <option value="1 Guest">1 Guest</option>
+                <option value="2 Guests (Couple)">2 Guests (Couple)</option>
+                <option value="3-4 Family Members">3-4 Family Members</option>
+                <option value="Full Family (5+ Guests)">Full Family (5+ Guests)</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-cinzel text-gold-300 mb-1">Warm Wishes For Shruti &amp; Saurabh</label>
+            <textarea id="guestWishesInput" rows="2" placeholder="Send your prayers and blessings to the couple..." class="w-full bg-maroon-950/90 border border-gold-500/40 rounded-xl px-4 py-2 text-xs text-champagne focus:outline-none focus:border-gold-400"></textarea>
+          </div>
+
+          <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-gold-600 via-gold-400 to-gold-600 text-maroon-950 font-cinzel font-bold text-xs tracking-widest uppercase rounded-xl shadow-lg hover:shadow-gold-500/50 hover:opacity-95 transition">
+            Generate My Boarding Pass &amp; Confirm RSVP
+          </button>
+        </form>
+
+        <div id="rsvpSuccessBanner" class="hidden p-4 bg-maroon-950/95 border-t border-gold-500 text-center text-xs">
+          <p class="font-cinzel text-gold-300 font-bold">✨ RSVP Confirmed! ✨</p>
+          <p id="rsvpSuccessMessage" class="text-champagne/80 font-marcellus mt-1"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center py-8 text-xs font-cinzel text-gold-400/80 border-t border-gold-500/25">
+      <p class="font-decorative text-3xl text-gold-300 mb-1">Shruti &bull; Saurabh</p>
+      <p class="tracking-widest">#ShrutiKiSaurabh &bull; February 2027 &bull; Ahmedabad</p>
+      <p class="text-[10px] text-champagne/50 mt-2 font-marcellus">
+        With Best Compliments: The Nagar Family (Parshuramji, Vikram-Veena, Uttam-Tara, Prakash-Anita &amp; The Loving Tribe)
+      </p>
+    </footer>
+
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+      // Ensure window is at (0, 0) on fresh load
+      window.scrollTo(0, 0);
+
+      /* 1. Petal Shower Animation */
+      const petalLayer = document.getElementById('petalLayer');
+      const petalTypes = ['🌸', '🌺', '✨', '🌼'];
+      for (let i = 0; i < 15; i++) {
+        const petal = document.createElement('div');
+        petal.className = 'petal text-sm sm:text-base opacity-75';
+        petal.innerText = petalTypes[Math.floor(Math.random() * petalTypes.length)];
+        petal.style.left = `${Math.random() * 95}vw`;
+        petal.style.animationDuration = `${9 + Math.random() * 8}s`;
+        petal.style.animationDelay = `${Math.random() * 6}s`;
+        petalLayer.appendChild(petal);
+      }
+
+      /* 2. DUAL-ENGINE AUDIO SYSTEM */
+      const weddingAudio = document.getElementById('weddingShehnaiAudio');
+      const musicController = document.getElementById('musicController');
+      const discGraphic = document.getElementById('discGraphic');
+      const musicStatusText = document.getElementById('musicStatusText');
+      const soundIcon = document.getElementById('soundIcon');
+
+      let audioCtx = null;
+      let synthInterval = null;
+      let isSynthActive = false;
+      let isMusicPlaying = false;
+
+      function startSynthesizer() {
+        if (isSynthActive) return;
+        try {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          audioCtx = new AudioContextClass();
+
+          function spawnDrone(freq, gainAmount) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            const filter = audioCtx.createBiquadFilter();
+
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(400, audioCtx.currentTime);
+
+            gain.gain.setValueAtTime(gainAmount, audioCtx.currentTime);
+
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+          }
+
+          spawnDrone(146.83, 0.035);
+          spawnDrone(220.00, 0.025);
+
+          const notes = [293.66, 329.63, 369.99, 440.00, 493.88, 587.33, 440.00, 369.99];
+          let step = 0;
+
+          synthInterval = setInterval(() => {
+            if (!audioCtx || audioCtx.state === 'suspended' || !isMusicPlaying) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'triangle';
+            const f = notes[step % notes.length];
+            osc.frequency.setValueAtTime(f, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(f * 1.025, audioCtx.currentTime + 0.35);
+
+            gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.065, audioCtx.currentTime + 0.15);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.85);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.9);
+            step++;
+          }, 1000);
+
+          isSynthActive = true;
+        } catch (e) {
+          console.warn('Synthesizer unavailable', e);
+        }
+      }
+
+      function enableMusic() {
+        isMusicPlaying = true;
+        weddingAudio.volume = 0.85;
+
+        const playPromise = weddingAudio.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              discGraphic.classList.add('animate-spin-slow');
+              musicStatusText.textContent = 'Music On';
+              soundIcon.className = 'fas fa-volume-up text-gold-400 text-sm ml-1';
+            })
+            .catch(() => {
+              startSynthesizer();
+              discGraphic.classList.add('animate-spin-slow');
+              musicStatusText.textContent = 'Music On';
+              soundIcon.className = 'fas fa-volume-up text-gold-400 text-sm ml-1';
+            });
+        }
+      }
+
+      function disableMusic() {
+        isMusicPlaying = false;
+        weddingAudio.pause();
+        if (audioCtx && audioCtx.state === 'running') {
+          audioCtx.suspend();
+        }
+        discGraphic.classList.remove('animate-spin-slow');
+        musicStatusText.textContent = 'Music Muted';
+        soundIcon.className = 'fas fa-volume-mute text-gold-400/60 text-sm ml-1';
+      }
+
+      musicController.addEventListener('click', () => {
+        if (isMusicPlaying) {
+          disableMusic();
+        } else {
+          if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume();
+          }
+          enableMusic();
+        }
+      });
+
+      // Entrance Modal Action with guaranteed scroll-to-top
+      const entranceModal = document.getElementById('entranceModal');
+      const enterCelebrationBtn = document.getElementById('enterCelebrationBtn');
+      const mainPage = document.getElementById('mainPage');
+
+      enterCelebrationBtn.addEventListener('click', () => {
+        // Scroll to the very top right as the button is clicked
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+
+        enableMusic();
+        entranceModal.classList.add('opacity-0', 'pointer-events-none');
+        setTimeout(() => {
+          entranceModal.style.display = 'none';
+          mainPage.classList.remove('opacity-0');
+          // Re-affirm position at top once main content fades in
+          window.scrollTo(0, 0);
+
+          confetti({
+            particleCount: 80,
+            spread: 85,
+            origin: { y: 0.35 },
+            colors: ['#d4af37', '#f6df8d', '#6d1020', '#fff9e5']
+          });
+        }, 800);
+      });
+
+      /* 3. INTERACTIVE GOLD SCRATCH CARD */
+      const canvas = document.getElementById('scratchCanvas');
+      const ctx = canvas.getContext('2d');
+      const scratchStatusMsg = document.getElementById('scratchStatusMsg');
+      let isScratching = false;
+      let cardRevealed = false;
+
+      function renderGoldSurface() {
+        const w = canvas.width;
+        const h = canvas.height;
+
+        const grad = ctx.createLinearGradient(0, 0, w, h);
+        grad.addColorStop(0, '#b8860b');
+        grad.addColorStop(0.35, '#f6df8d');
+        grad.addColorStop(0.7, '#d4af37');
+        grad.addColorStop(1, '#8c6207');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+
+        ctx.fillStyle = '#2b050b';
+        ctx.font = 'bold 14px "Cinzel", serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('✨ SCRATCH WITH FINGER ✨', w / 2, h / 2 - 8);
+        ctx.font = '11px "Marcellus", serif';
+        ctx.fillText('REVEAL THE WEDDING DATE', w / 2, h / 2 + 16);
+      }
+      renderGoldSurface();
+
+      function getCoords(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        return {
+          x: (clientX - rect.left) * scaleX,
+          y: (clientY - rect.top) * scaleY
+        };
+      }
+
+      function scratchAt(e) {
+        if (!isScratching || cardRevealed) return;
+        const p = getCoords(e);
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 22, 0, Math.PI * 2);
+        ctx.fill();
+        evaluateScratch();
+      }
+
+      function evaluateScratch() {
+        if (cardRevealed) return;
+        const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        let transparent = 0;
+        const step = 16;
+        for (let i = 3; i < pixels.length; i += step) {
+          if (pixels[i] === 0) transparent++;
+        }
+        const pct = (transparent / (pixels.length / step)) * 100;
+
+        if (pct > 35) {
+          cardRevealed = true;
+          canvas.style.transition = 'opacity 0.6s ease';
+          canvas.style.opacity = '0';
+          setTimeout(() => { canvas.style.display = 'none'; }, 600);
+          scratchStatusMsg.innerHTML = '<span class="text-gold-200 font-bold"><i class="fas fa-check-circle text-gold-400 mr-1"></i> Date Revealed: 16th February 2027!</span>';
+          confetti({
+            particleCount: 110,
+            spread: 90,
+            origin: { y: 0.55 },
+            colors: ['#d4af37', '#ffffff', '#eec956']
+          });
+        }
+      }
+
+      canvas.addEventListener('mousedown', (e) => { isScratching = true; scratchAt(e); });
+      window.addEventListener('mouseup', () => { isScratching = false; });
+      canvas.addEventListener('mousemove', scratchAt);
+
+      canvas.addEventListener('touchstart', (e) => { isScratching = true; scratchAt(e); e.preventDefault(); }, { passive: false });
+      canvas.addEventListener('touchmove', (e) => { scratchAt(e); e.preventDefault(); }, { passive: false });
+      window.addEventListener('touchend', () => { isScratching = false; });
+
+      /* 4. REAL-TIME COUNTDOWN TO 16 FEBRUARY 2027 18:30 IST */
+      const weddingDate = new Date("February 16, 2027 17:30:00 GMT+0530").getTime();
+
+      function refreshCountdown() {
+        const now = new Date().getTime();
+        const dist = weddingDate - now;
+
+        if (dist > 0) {
+          const d = Math.floor(dist / (1000 * 60 * 60 * 24));
+          const h = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const m = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+          const s = Math.floor((dist % (1000 * 60)) / 1000);
+
+          document.getElementById('daysVal').innerText = String(d).padStart(2, '0');
+          document.getElementById('hoursVal').innerText = String(h).padStart(2, '0');
+          document.getElementById('minsVal').innerText = String(m).padStart(2, '0');
+          document.getElementById('secsVal').innerText = String(s).padStart(2, '0');
+        } else {
+          document.getElementById('daysVal').innerText = '00';
+          document.getElementById('hoursVal').innerText = '00';
+          document.getElementById('minsVal').innerText = '00';
+          document.getElementById('secsVal').innerText = '00';
+        }
+      }
+      refreshCountdown();
+      setInterval(refreshCountdown, 1000);
+
+      /* 5. RSVP SUBMISSION HANDLER */
+      const rsvpForm = document.getElementById('rsvpForm');
+      const rsvpSuccessBanner = document.getElementById('rsvpSuccessBanner');
+      const rsvpSuccessMessage = document.getElementById('rsvpSuccessMessage');
+
+      rsvpForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('guestNameInput').value.trim();
+        const count = document.getElementById('guestCountInput').value;
+        const attending = document.getElementById('guestAttendanceInput').value;
+
+        rsvpSuccessBanner.classList.remove('hidden');
+        rsvpSuccessMessage.innerHTML = `Thank you, <strong>${name}</strong> (${count})! Your boarding pass is confirmed: <em>${attending}</em>. The Nagar family eagerly awaits you!`;
+
+        confetti({
+          particleCount: 90,
+          spread: 75,
+          origin: { y: 0.65 },
+          colors: ['#d4af37', '#ffffff', '#faeec0']
+        });
+      });
+
+    });
+  </script>
+</body>
+</html>
